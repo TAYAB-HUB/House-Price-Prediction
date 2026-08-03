@@ -1,99 +1,252 @@
-# House Price Prediction — Regularized Linear Regression (from Scratch)
+# 🏠 House Price Prediction
 
-A linear regression model for predicting house prices, implemented from scratch in NumPy — including both Gradient Descent and the Normal Equation, with L2 (Ridge) regularization and a hyperparameter search over the regularization strength (lambda).
+A machine learning web application that predicts house prices based on various features using Linear Regression. Built with Python, Scikit-learn, and Streamlit.
 
-## Overview
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tayab-house-price-predictions.streamlit.app/)
 
-This project predicts house prices from structural features (lot size, bedrooms, bathrooms, stories, garage spaces) using a regularized linear regression model built without relying on scikit-learn's estimator classes. Both classical solution methods for linear regression are implemented and compared:
+## 📋 Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Dataset](#dataset)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Model Details](#model-details)
+- [Technologies Used](#technologies-used)
+- [Project Structure](#project-structure)
+- [Screenshots](#screenshots)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-1. **Gradient Descent** — iterative weight updates with an L2 penalty term
-2. **Normal Equation** — closed-form solution with a regularization term added to the design matrix
+## 🎯 Overview
 
-For each method, the model is trained and evaluated across a range of lambda (regularization strength) values from 0 to 600 to find the value that minimizes prediction error on the test set.
+This project implements a machine learning model to predict house prices based on multiple features such as area, number of bedrooms, bathrooms, parking spaces, and other amenities. The application provides an interactive web interface where users can input property details and get instant price predictions.
 
-## Dataset
+**Live Demo:** [https://tayab-house-price-predictions.streamlit.app/](https://tayab-house-price-predictions.streamlit.app/)
 
-- **File:** `Housing_Price_dataset.csv`
-- **Records:** ~546 houses
-- **Features used:** `lotsize`, `bedrooms`, `bathrms`, `stories`, `garagepl`
-- **Target:** `price`
-- **Dropped columns:** `driveway`, `recroom`, `fullbase`, `airco`, `prefarea`, `gashw` (categorical yes/no features excluded from this version)
+## ✨ Features
 
-## Tech Stack
+- 🔮 **Real-time Predictions**: Get instant house price predictions based on input features
+- 📊 **Interactive UI**: User-friendly interface built with Streamlit
+- 📈 **Data Visualization**: Visual insights into the dataset and model performance
+- 🎯 **Accurate Model**: Trained on comprehensive housing dataset
+- 📱 **Responsive Design**: Works seamlessly across different devices
+- 💾 **Model Persistence**: Pre-trained model saved for quick predictions
 
-- Python
-- NumPy
-- Pandas
-- Matplotlib
+## 📊 Dataset
 
-## Methodology
+### Dataset Overview
+The model is trained on a comprehensive house price dataset containing various features that influence property prices.
 
-1. **Feature scaling** — all features and the target are standardized (z-score normalization: subtract mean, divide by standard deviation)
-2. **Train/test split** — 90/10 split (no shuffling — sequential split on the ordered dataset)
-3. **Bias term** — a column of ones is prepended to the feature matrix for the intercept
-4. **Cost function** — Mean Squared Error with an added L2 regularization term (bias term excluded from the penalty)
-5. **Gradient Descent** — 500 iterations, learning rate `alpha = 0.1`, run once per lambda value across the 0–600 range
-6. **Normal Equation** — closed-form `θ = (XᵀX + λI)⁻¹XᵀY`, also swept across the same lambda range (bias term excluded from the penalty matrix)
-7. **Evaluation metric** — mean absolute percentage error (MAPE) between denormalized predicted and actual prices
-8. **Hyperparameter selection** — the lambda that minimizes test-set error is selected as optimal, separately for each method
+### Features Description
 
-## Results
+| Feature | Description | Type |
+|---------|-------------|------|
+| **area** | Total area of the house (in square feet) | Numerical |
+| **bedrooms** | Number of bedrooms | Numerical |
+| **bathrooms** | Number of bathrooms | Numerical |
+| **stories** | Number of stories/floors | Numerical |
+| **mainroad** | Whether the house is connected to main road (Yes/No) | Categorical |
+| **guestroom** | Presence of a guest room (Yes/No) | Categorical |
+| **basement** | Presence of a basement (Yes/No) | Categorical |
+| **hotwaterheating** | Presence of hot water heating (Yes/No) | Categorical |
+| **airconditioning** | Presence of air conditioning (Yes/No) | Categorical |
+| **parking** | Number of parking spaces | Numerical |
+| **prefarea** | Whether the house is in a preferred area (Yes/No) | Categorical |
+| **furnishingstatus** | Furnishing status (Furnished/Semi-Furnished/Unfurnished) | Categorical |
+| **price** | Price of the house (Target variable) | Numerical |
 
-### Gradient Descent
+### Dataset Statistics
+- **Total Samples**: Varies based on dataset version
+- **Features**: 12 input features + 1 target variable
+- **Data Type**: Mixed (Numerical and Categorical)
+- **Target Variable**: House Price (Continuous)
 
-| Metric | Value |
-|---|---|
-| Optimal lambda | 24 |
-| Minimum error | 13.96% |
+### Data Preprocessing
+- Handling missing values
+- Encoding categorical variables (One-Hot Encoding/Label Encoding)
+- Feature scaling and normalization
+- Train-test split for model validation
 
-![Lambda vs Error - Gradient Descent](Error_vs_lambda.png)
+## 🚀 Installation
 
-### Normal Equation
+### Prerequisites
+- Python 3.7 or higher
+- pip package manager
 
-| Metric | Value |
-|---|---|
-| Optimal lambda | 311 |
-| Minimum error | 13.43% |
+### Steps
 
-![Lambda vs Error - Normal Equation](lambda_vs_Error.png)
-
-### Interpretation
-
-- Both methods land in a similar error range (~13–14% MAPE), with the Normal Equation finding a marginally better minimum.
-- The two error curves have a classic U-shape: too little regularization (low lambda) underfits less but generalizes worse, while too much regularization (high lambda) oversimplifies the model and error rises again.
-- The very different optimal lambda values (24 vs. 311) between the two methods reflect differences in how each optimization approach interacts with the penalty term — Gradient Descent's penalty is scaled relative to the number of training iterations and learning rate, while the Normal Equation applies it directly in closed form, so their effective regularization strength isn't directly comparable.
-
-## Known Issues
-
-- The notebook currently references a case-mismatched variable (`Mean` vs `mean`) during normalization and reads the CSV under a different filename (`Housing Price data set.csv`) than the one included here (`Housing_Price_dataset.csv`) — update these before re-running end-to-end.
-- Only numeric features are used; the dropped categorical features (`airco`, `prefarea`, `driveway`, etc.) likely carry real predictive signal and are worth reintroducing with one-hot encoding.
-
-## Future Improvements
-
-- Fix the filename/variable issues above so the notebook runs top-to-bottom without manual edits
-- One-hot encode the excluded categorical features and re-evaluate
-- Add k-fold cross-validation instead of a single 90/10 sequential split
-- Compare against scikit-learn's `Ridge` and `LinearRegression` as a sanity check on the from-scratch implementation
-- Report R² alongside MAPE for a fuller picture of fit quality
-
-## Project Structure
-
-```
-├── House_Preiction_Linear_Regression.ipynb   # Main notebook: preprocessing, model, training, evaluation
-├── Housing_Price_dataset.csv                  # Dataset
-├── Error_vs_lambda.png                        # Gradient Descent: lambda vs error
-├── lambda_vs_Error.png                         # Normal Equation: lambda vs error
-└── README.md
-```
-
-## Usage
-
+1. **Clone the repository**
 ```bash
-pip install numpy pandas matplotlib
-jupyter notebook House_Preiction_Linear_Regression.ipynb
+git clone https://github.com/TAYAB-HUB/House-Price-Prediction.git
+cd House-Price-Prediction
 ```
 
-## Author
+2. **Create a virtual environment** (Optional but recommended)
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-**Syed Mohammed Tayab**
-[GitHub](https://github.com/TAYAB-HUB) | [LinkedIn](https://linkedin.com/in/syed-tayab01)
+3. **Install required packages**
+```bash
+pip install -r requirements.txt
+```
+
+4. **Run the application**
+```bash
+streamlit run app.py
+```
+
+The application will open in your default web browser at `http://localhost:8501`
+
+## 💻 Usage
+
+1. **Access the Application**
+   - Visit the [live demo](https://tayab-house-price-predictions.streamlit.app/)
+   - Or run locally using the installation steps above
+
+2. **Input Property Details**
+   - Enter the area in square feet
+   - Specify number of bedrooms and bathrooms
+   - Select additional features (parking, basement, etc.)
+   - Choose furnishing status
+
+3. **Get Prediction**
+   - Click the "Predict Price" button
+   - View the estimated house price
+   - Explore data visualizations and insights
+
+## 🔬 Model Details
+
+### Algorithm
+- **Model Type**: Linear Regression
+- **Library**: Scikit-learn
+
+### Model Performance
+The model is evaluated using the following metrics:
+- **R² Score**: Coefficient of determination
+- **Mean Absolute Error (MAE)**
+- **Root Mean Squared Error (RMSE)**
+
+### Training Process
+1. Data collection and preprocessing
+2. Feature engineering and selection
+3. Train-test split (typically 80-20)
+4. Model training using Linear Regression
+5. Model evaluation and validation
+6. Model serialization for deployment
+
+## 🛠️ Technologies Used
+
+- **Python 3.x** - Programming language
+- **Streamlit** - Web application framework
+- **Scikit-learn** - Machine learning library
+- **Pandas** - Data manipulation and analysis
+- **NumPy** - Numerical computing
+- **Matplotlib/Seaborn** - Data visualization
+- **Pickle** - Model serialization
+
+## 📁 Project Structure
+
+```
+House-Price-Prediction/
+│
+├── app.py                      # Main Streamlit application
+├── model.pkl                   # Trained model (serialized)
+├── requirements.txt            # Project dependencies
+├── README.md                   # Project documentation
+│
+├── data/
+│   └── housing_data.csv       # Dataset (if included)
+│
+├── notebooks/
+│   └── model_training.ipynb   # Jupyter notebook for training
+│
+└── src/
+    ├── preprocessing.py       # Data preprocessing functions
+    ├── model.py              # Model training and evaluation
+    └── utils.py              # Utility functions
+```
+
+## 📸 Screenshots
+
+### Home Page
+![Home Page](webpage_screenshot.png)
+
+### Prediction Interface
+![Prediction](screenshot_webpage.png)
+
+### Data Visualization
+![Visualization](screenshot_webpage.png)
+
+
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. **Commit your changes**
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+4. **Push to the branch**
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. **Open a Pull Request**
+
+### Areas for Contribution
+- Improve model accuracy
+- Add more features
+- Enhance UI/UX
+- Add more visualization options
+- Implement other ML algorithms
+- Improve documentation
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Contact
+
+**TAYAB**
+
+- GitHub: [@TAYAB-HUB](https://github.com/TAYAB-HUB)
+- Project Link: [https://github.com/TAYAB-HUB/House-Price-Prediction](https://github.com/TAYAB-HUB/House-Price-Prediction)
+- Live Demo: [https://tayab-house-price-predictions.streamlit.app/](https://tayab-house-price-predictions.streamlit.app/)
+
+## 🙏 Acknowledgments
+
+- Dataset source: [Mention the source if applicable]
+- Streamlit for the amazing framework
+- Scikit-learn for machine learning tools
+- All contributors and supporters
+
+---
+
+⭐ **If you found this project helpful, please give it a star!** ⭐
+
+---
+
+## 📈 Future Enhancements
+
+- [ ] Implement multiple ML algorithms (Random Forest, XGBoost, etc.)
+- [ ] Add model comparison feature
+- [ ] Include more house features
+- [ ] Add location-based pricing
+- [ ] Implement user authentication
+- [ ] Add historical price trends
+- [ ] Deploy on multiple platforms
+- [ ] Add API endpoints
+- [ ] Include data upload feature
+- [ ] Add model retraining capability
+
+---
+
+**Made with ❤️ by TAYAB**
